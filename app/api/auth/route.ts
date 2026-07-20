@@ -19,7 +19,7 @@ function allowed(request: NextRequest) {
   const address = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   const now = Date.now();
   const recent = (attempts.get(address) || []).filter((time) => now - time < 15 * 60_000);
-  if (recent.length >= 8) return false;
+  if (recent.length >= 30) return false;
   recent.push(now);
   attempts.set(address, recent);
   return true;
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     response.cookies.set(sessionCookie.name, createSession(user.id), sessionCookie.options);
     return response;
   } catch (error) {
-    if (error instanceof Error && error.message === "PROFILE_LIMIT") return noStore({ error: "Both study profiles are already set up. Please sign in instead." }, 409);
+  if (error instanceof Error && error.message === "PROFILE_LIMIT") return noStore({ error: "The 20-profile study space is full." }, 409);
     if (error instanceof Error && error.message === "NAME_TAKEN") return noStore({ error: "That profile already exists. Please sign in instead." }, 409);
     return noStore({ error: "Cloud sync is temporarily unavailable." }, 503);
   }

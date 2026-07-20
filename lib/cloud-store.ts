@@ -4,6 +4,7 @@ export type User = { id: string; name: string; normalizedName: string; createdAt
 type Stored<T> = { value: T; etag?: string };
 
 const usersPath = "studydesk/v1/users.json";
+const maxProfiles = 20;
 
 async function readJson<T>(pathname: string, fallback: T): Promise<Stored<T>> {
   const result = await get(pathname, { access: "private", useCache: false });
@@ -28,7 +29,7 @@ export async function loadUsers() {
 export async function addUser(user: User) {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const users = await loadUsers();
-    if (users.value.length >= 2) throw new Error("PROFILE_LIMIT");
+    if (users.value.length >= maxProfiles) throw new Error("PROFILE_LIMIT");
     if (users.value.some((item) => item.normalizedName === user.normalizedName)) throw new Error("NAME_TAKEN");
     try {
       await writeJson(usersPath, [...users.value, user], users.etag);
