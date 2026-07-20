@@ -1,24 +1,43 @@
-# StudyDesk — DA & CSE Study Portal
+# StudyDesk
 
-Run the portal:
+StudyDesk is a focused study portal for CSE and DA preparation. It combines structured checklists, formula references, and personal progress tracking in one fast, clean interface.
 
-```bash
-cd /path/to/study-desk
-npm run dev
-```
+Live site: https://study-desk-da-cse.vercel.app
 
-Open `http://localhost:3000`.
+## What it includes
 
-## Notes source
+- Complete CSE and DA topic checklists
+- Searchable formula books with rendered mathematical notation
+- Separate name-based profiles with synced progress
+- A remembered CSE or DA selection for each profile
+- Responsive design for desktop and mobile
 
-The deployed portal reads its bundled DA notes from `data/`:
+## Notes and progress
 
-- `DA_Full_Topic_Checklist.md`
-- `DA_Formula_Sheet.md`
-
-When CSE notes are ready, add them to `data/` with these exact names, commit, and redeploy:
+The study content is bundled from Markdown files in `data/`:
 
 - `CSE_Full_Topic_Checklist.md`
 - `CSE_Formula_Sheet.md`
+- `DA_Full_Topic_Checklist.md`
+- `DA_Formula_Sheet.md`
 
-Each student's checklist progress is saved separately in the browser on this device. It is not uploaded anywhere.
+Progress and each profile's last selected study track are stored in a private Vercel Blob store. Profiles are intended for a small, trusted study group and use a name-only sign-in flow.
+
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+Open http://localhost:3000.
+
+To use cloud sync locally, configure the same Vercel Blob and session-secret environment variables used by the deployed project.
+
+## Quality checks
+
+```bash
+npm run build
+```
+
+The project uses Next.js, React, TypeScript, KaTeX, and Vercel Blob.
