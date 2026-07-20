@@ -396,7 +396,7 @@
 ## 9. EXECUTION CHECKLIST (beyond pure content — this is what actually converts knowledge into full marks)
 
 - [ ] Solved every question in the 2024, 2025, and 2026 papers from scratch (not just read the solution)
-- [ ] Re-derived every ✅ formula from the formula sheet without looking, at least once
+- [ ] Re-derived every [Tested] formula from the formula sheet without looking, at least once
 - [ ] Timed practice on GA section specifically (target: <1 min/question average)
 - [ ] Practiced NAT-type questions where there's no option to eliminate from — full computation required
 - [ ] Practiced MSQ-type questions by evaluating every option independently (no partial shortcuts)
