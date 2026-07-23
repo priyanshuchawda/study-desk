@@ -3,6 +3,7 @@
 import { FormEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import katex from "katex";
 import type { FormulaSection, Subject } from "@/lib/study-data";
+import { displayStudyText } from "@/lib/study-text";
 
 type Exam = "DA" | "CSE";
 type View = "checklist" | "formulas";
@@ -10,8 +11,6 @@ type Theme = "light" | "dark";
 type Progress = Record<string, boolean>;
 
 const initials = (name: string) => name.trim().slice(0, 2).toUpperCase() || "G";
-const display = (text: string) => text.replace(/\*\*/g, "").replace(/`/g, "");
-
 function MathText({ text }: { text: string }) {
   const fragments = text.split(/(\$[^$]+\$)/g);
   return <>{fragments.map((fragment, index) => fragment.startsWith("$") && fragment.endsWith("$")
@@ -23,7 +22,7 @@ function FormulaContent({ lines }: { lines: string[] }) {
   const nodes: ReactNode[] = [];
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
-    const text = display(line);
+    const text = displayStudyText(line);
     const next = lines[index + 1]?.trim();
     if (text.startsWith("|") && next?.match(/^\|[\s|:-]+\|$/)) {
       const cells = (value: string) => value.split("|").slice(1, -1).map((cell) => cell.trim());
@@ -174,8 +173,8 @@ export default function StudyPortal({ daSubjects, daFormulas, cseSubjects, cseFo
     <section className="controls" aria-label="Study controls"><div className="exam-switcher"><button className={exam === "DA" ? "active" : ""} onClick={() => selectExam("DA")}>DA</button><button className={exam === "CSE" ? "active" : ""} onClick={() => selectExam("CSE")}>CSE</button></div><nav className="view-tabs"><button className={view === "checklist" ? "active" : ""} onClick={() => setView("checklist")}>Checklist</button><button className={view === "formulas" ? "active" : ""} onClick={() => setView("formulas")}>Formula book</button></nav></section>
     {subjects.length === 0 ? <section className="empty-state"><span className="empty-icon">+</span><p className="eyebrow">PLEASE TRY AGAIN</p><h2>Study content is temporarily unavailable.</h2><p>Refresh the page in a moment. Your saved progress is unaffected.</p></section> : view === "checklist" ? <section className="subject-grid">{subjects.map((subject, subjectIndex) => {
       const topics = subject.sections.flatMap((section) => section.topics); const done = topics.filter((topic) => progress[topic.id]).length; const subjectPercent = topics.length ? Math.round((done / topics.length) * 100) : 0; const isOpen = openSubject === subject.title;
-      return <article className={`subject-card ${isOpen ? "open" : ""}`} key={subject.title}><button className="subject-head" onClick={() => setOpenSubject(isOpen ? "" : subject.title)}><span className="subject-number">{String(subjectIndex + 1).padStart(2, "0")}</span><span className="subject-title"><strong><MathText text={display(subject.title)} /></strong><small>{done}/{topics.length} topics complete</small><span className="subject-track"><span style={{ width: `${subjectPercent}%` }} /></span></span><span className="subject-percent">{subjectPercent}%</span><span className="plus">{isOpen ? "−" : "+"}</span></button>{isOpen && <div className="topics">{subject.sections.map((section) => <div className="topic-group" key={section.title}><h2><MathText text={display(section.title)} /></h2>{section.topics.map((topic) => <label className={`topic ${progress[topic.id] ? "checked" : ""}`} key={topic.id}><input type="checkbox" checked={Boolean(progress[topic.id])} onChange={() => toggleTopic(topic.id)} /><span className="custom-check">✓</span><span><MathText text={display(topic.name)} /></span></label>)}</div>)}</div>}</article>;
-    })}</section> : <section className="formula-area"><div className="formula-tools"><div><p className="eyebrow">QUICK REFERENCE</p><h2>{exam === "DA" ? "DA formula book" : "CSE formula book"}</h2></div><input className="formula-search" value={formulaQuery} onChange={(event) => setFormulaQuery(event.target.value)} placeholder="Search a formula or topic" /></div><div className="formula-list">{filteredFormulas.map((formula) => <details className="formula-section" key={formula.title} open={formulaQuery.length > 0}><summary><MathText text={display(formula.title)} /> <span className="summary-toggle">+</span></summary><FormulaContent lines={formula.content} /></details>)}</div></section>}
+      return <article className={`subject-card ${isOpen ? "open" : ""}`} key={subject.title}><button className="subject-head" onClick={() => setOpenSubject(isOpen ? "" : subject.title)}><span className="subject-number">{String(subjectIndex + 1).padStart(2, "0")}</span><span className="subject-title"><strong><MathText text={displayStudyText(subject.title)} /></strong><small>{done}/{topics.length} topics complete</small><span className="subject-track"><span style={{ width: `${subjectPercent}%` }} /></span></span><span className="subject-percent">{subjectPercent}%</span><span className="plus">{isOpen ? "−" : "+"}</span></button>{isOpen && <div className="topics">{subject.sections.map((section) => <div className="topic-group" key={section.title}><h2><MathText text={displayStudyText(section.title)} /></h2>{section.topics.map((topic) => <label className={`topic ${progress[topic.id] ? "checked" : ""}`} key={topic.id}><input type="checkbox" checked={Boolean(progress[topic.id])} onChange={() => toggleTopic(topic.id)} /><span className="custom-check">✓</span><span><MathText text={displayStudyText(topic.name)} /></span></label>)}</div>)}</div>}</article>;
+    })}</section> : <section className="formula-area"><div className="formula-tools"><div><p className="eyebrow">QUICK REFERENCE</p><h2>{exam === "DA" ? "DA formula book" : "CSE formula book"}</h2></div><input className="formula-search" value={formulaQuery} onChange={(event) => setFormulaQuery(event.target.value)} placeholder="Search a formula or topic" /></div><div className="formula-list">{filteredFormulas.map((formula) => <details className="formula-section" key={formula.title} open={formulaQuery.length > 0}><summary><MathText text={displayStudyText(formula.title)} /> <span className="summary-toggle">+</span></summary><FormulaContent lines={formula.content} /></details>)}</div></section>}
     <footer>Built for two focused minds · Private cloud sync for your two profiles</footer>
   </main>;
 }
